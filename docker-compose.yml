@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+
+  query-expansion-service:
+    build: ./query-expansion-service
+    container_name: query-expansion-service
+    ports:
+      - "8081:8081"
+    networks:
+      - dealfinder-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  youtube-service:
+    build: ./youtube-service
+    container_name: youtube-service
+    ports:
+      - "8082:8082"
+    environment:
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+    networks:
+      - dealfinder-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  affiliate-service:
+    build: ./affiliate-service
+    container_name: affiliate-service
+    ports:
+      - "8083:8083"
+    environment:
+      - AMAZON_AFFILIATE_TAG=${AMAZON_AFFILIATE_TAG}
+    networks:
+      - dealfinder-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  image-service:
+    build: ./image-service
+    container_name: image-service
+    ports:
+      - "8084:8084"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID}
+    networks:
+      - dealfinder-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8088:8080"
+    environment:
+      - QUERY_EXPANSION_SERVICE_URL=http://query-expansion-service:8081
+      - YOUTUBE_SERVICE_URL=http://youtube-service:8082
+      - AFFILIATE_SERVICE_URL=http://affiliate-service:8083
+      - IMAGE_SERVICE_URL=http://image-service:8084
+      - AMAZON_AFFILIATE_TAG=${AMAZON_AFFILIATE_TAG}
+    depends_on:
+      - query-expansion-service
+      - youtube-service
+      - affiliate-service
+      - image-service
+    networks:
+      - dealfinder-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: dealfinder-frontend
+    ports:
+      - "3001:80"
+    environment:
+      - PORT=80
+      - API_GATEWAY_URL=http://api-gateway:8080
+      - API_GATEWAY_HOST=api-gateway:8080
+    depends_on:
+      - api-gateway
+    networks:
+      - dealfinder-network
+
+networks:
+  dealfinder-network:
+    driver: bridge

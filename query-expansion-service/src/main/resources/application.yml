@@ -1,0 +1,12 @@
+server:
+  port: ${PORT:8081}
+
+spring:
+  application:
+    name: query-expansion-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

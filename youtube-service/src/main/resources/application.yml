@@ -1,0 +1,33 @@
+server:
+  port: ${PORT:8082}
+
+spring:
+  application:
+    name: youtube-service
+
+youtube:
+  api:
+    key: ${YOUTUBE_API_KEY}
+    base-url: https://www.googleapis.com/youtube/v3
+  search:
+    max-results-per-query: 5
+    max-age-months: 12
+    min-duration-seconds: 300
+    max-duration-seconds: 1800
+    trusted-channels:
+      - id: UCBFa3zyMBiaSILzFstLBylA
+        name: Prasadtechintelugu
+      - id: UCmB3YWZzfNLfq5kJNmJvnGw
+        name: Geeky Ranjit
+      - id: UCwFNMHqPBwOklHflqSdT1DQ
+        name: Technical Guruji
+      - id: UC5PYHgCFMZ-czwRk-TigjmA
+        name: Trakin Tech
+      - id: UCHxDVgFbbUbHqjfVLJTjKNg
+        name: besttechintelugu
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

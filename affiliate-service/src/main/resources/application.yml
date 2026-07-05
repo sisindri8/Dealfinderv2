@@ -1,0 +1,17 @@
+server:
+  port: ${PORT:8083}
+
+spring:
+  application:
+    name: affiliate-service
+
+affiliate:
+  amazon:
+    tag: ${AMAZON_AFFILIATE_TAG:your-tag-21}
+    base-url: https://www.amazon.in/dp
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

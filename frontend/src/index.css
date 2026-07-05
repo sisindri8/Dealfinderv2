@@ -1,0 +1,44 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Light, clean SaaS palette */
+  --bg: #f6f7fb;
+  --bg2: #ffffff;
+  --bg3: #f0f2f7;
+  --border: #e8e9f0;
+  --border-strong: #dcdee8;
+
+  --ink: #0f1115;
+  --ink-soft: #14161c;
+
+  --accent: #4f6bff;
+  --accent-dim: rgba(79,107,255,0.10);
+  --accent-glow: rgba(79,107,255,0.22);
+
+  --text: #14161c;
+  --text-muted: #6b7080;
+  --text-dim: #a2a6b3;
+
+  --radius: 18px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.04);
+  --shadow-md: 0 8px 24px rgba(16,24,40,0.06);
+  --shadow-lg: 0 16px 40px rgba(16,24,40,0.09);
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }

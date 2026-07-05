@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+
+services:
+  query-expansion:
+    base-url: ${QUERY_EXPANSION_SERVICE_URL:http://localhost:8081}
+  youtube:
+    base-url: ${YOUTUBE_SERVICE_URL:http://localhost:8082}
+  affiliate:
+    base-url: ${AFFILIATE_SERVICE_URL:http://localhost:8083}
+  image:
+    base-url: ${IMAGE_SERVICE_URL:http://localhost:8084}
+
+affiliate:
+  amazon:
+    tag: ${AMAZON_AFFILIATE_TAG:your-tag-21}
+
+google:
+  oauth:
+    client-id: ${GOOGLE_CLIENT_ID}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: ${JWT_EXPIRATION_MS:604800000}   # 7 days
+
+cache:
+  search:
+    ttl-seconds: ${SEARCH_CACHE_TTL_SECONDS:3600}   # 1 hour
+
+rate-limit:
+  requests-per-window: ${RATE_LIMIT_REQUESTS:20}
+  window-seconds: ${RATE_LIMIT_WINDOW_SECONDS:60}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

@@ -1,0 +1,18 @@
+server:
+  port: ${PORT:8084}
+
+spring:
+  application:
+    name: image-service
+
+google:
+  custom-search:
+    api-key: ${GOOGLE_API_KEY:}
+    search-engine-id: ${GOOGLE_SEARCH_ENGINE_ID:}
+    base-url: https://www.googleapis.com/customsearch/v1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

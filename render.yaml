@@ -1,0 +1,81 @@
+services:
+  # ─── Query Expansion Service ──────────────────────────────────────────
+  - type: web
+    name: df-query-expansion
+    runtime: docker
+    plan: free
+    dockerfilePath: ./query-expansion-service/Dockerfile
+    dockerContext: ./query-expansion-service
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_APPLICATION_NAME
+        value: query-expansion-service
+
+  # ─── YouTube Service ──────────────────────────────────────────────────
+  - type: web
+    name: df-youtube
+    runtime: docker
+    plan: free
+    dockerfilePath: ./youtube-service/Dockerfile
+    dockerContext: ./youtube-service
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: YOUTUBE_API_KEY
+        sync: false
+
+  # ─── Affiliate Service ────────────────────────────────────────────────
+  - type: web
+    name: df-affiliate
+    runtime: docker
+    plan: free
+    dockerfilePath: ./affiliate-service/Dockerfile
+    dockerContext: ./affiliate-service
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: AMAZON_AFFILIATE_TAG
+        sync: false
+
+  # ─── Image Service ────────────────────────────────────────────────────
+  - type: web
+    name: df-image
+    runtime: docker
+    plan: free
+    dockerfilePath: ./image-service/Dockerfile
+    dockerContext: ./image-service
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GOOGLE_SEARCH_ENGINE_ID
+        sync: false
+
+  # ─── API Gateway ──────────────────────────────────────────────────────
+  - type: web
+    name: df-api-gateway
+    runtime: docker
+    plan: free
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: ./api-gateway
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: QUERY_EXPANSION_SERVICE_URL
+        sync: false  # set manually: https://df-query-expansion.onrender.com
+      - key: YOUTUBE_SERVICE_URL
+        sync: false  # set manually: https://df-youtube.onrender.com
+      - key: AFFILIATE_SERVICE_URL
+        sync: false  # set manually: https://df-affiliate.onrender.com
+      - key: IMAGE_SERVICE_URL
+        sync: false  # set manually: https://df-image.onrender.com
+
+  # ─── Frontend ─────────────────────────────────────────────────────────
+  - type: web
+    name: df-frontend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: API_GATEWAY_URL
+        sync: false  # set manually: https://df-api-gateway.onrender.com (with https://)
+      - key: API_GATEWAY_HOST
+        sync: false  # set manually: df-api-gateway.onrender.com (no https://)
