@@ -7,6 +7,8 @@ spring:
   data:
     redis:
       url: ${REDIS_URL:redis://localhost:6379}
+      connect-timeout: 2000ms   # fail fast instead of hanging if Redis is unreachable
+      timeout: 2000ms           # per-command timeout
 
 services:
   query-expansion:

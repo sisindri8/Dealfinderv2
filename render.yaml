@@ -1,4 +1,11 @@
 services:
+  # ─── Redis (cache + rate limiting + favorites/history) ───────────────
+  - type: keyvalue
+    name: df-redis
+    plan: free
+    ipAllowList: []   # internal-only; api-gateway connects over Render's private network
+    maxmemoryPolicy: allkeys-lru
+
   # ─── Query Expansion Service ──────────────────────────────────────────
   - type: web
     name: df-query-expansion
@@ -58,6 +65,11 @@ services:
     dockerContext: ./api-gateway
     healthCheckPath: /actuator/health
     envVars:
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: df-redis
+          property: connectionString
       - key: QUERY_EXPANSION_SERVICE_URL
         sync: false  # set manually: https://df-query-expansion.onrender.com
       - key: YOUTUBE_SERVICE_URL

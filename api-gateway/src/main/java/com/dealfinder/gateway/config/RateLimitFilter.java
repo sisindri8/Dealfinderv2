@@ -19,7 +19,13 @@ import java.time.Instant;
  * Fixed-window rate limiter backed by Redis INCR/EXPIRE. Keys by
  * authenticated userId when present (set by AuthFilter, which runs first),
  * otherwise falls back to client IP. Applies to /api/** only.
+ *
+ * Fails OPEN: if Redis is unreachable or slow, requests are allowed through
+ * rather than hanging or erroring out. Rate limiting is a protective
+ * nice-to-have, not something that should be able to take down the whole
+ * API when the cache layer has a bad day.
  */
+@Slf4j
 @Order(2)
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
@@ -49,9 +55,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
         long windowBucket = Instant.now().getEpochSecond() / windowSeconds;
         String key = "ratelimit:" + identity + ":" + windowBucket;
 
-        Long count = redisTemplate.opsForValue().increment(key);
-        if (count != null && count == 1L) {
-            redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
+        Long count;
+        try {
+            count = redisTemplate.opsForValue().increment(key);
+            if (count != null && count == 1L) {
+                redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
+            }
+        } catch (Exception e) {
+            // Redis down/unreachable/slow: don't let rate limiting take the
+            // whole API down with it. Log and let the request through.
+            log.warn("Rate limit check failed, allowing request through: {}", e.getMessage());
+            chain.doFilter(request, response);
+            return;
         }
 
         if (count != null && count > requestsPerWindow) {
