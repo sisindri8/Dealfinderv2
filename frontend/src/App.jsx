@@ -24,7 +24,7 @@ export default function App() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [favoriteAsins, setFavoriteAsins] = useState(new Set())
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
 
   // Load favorite ASINs when the user signs in (or on mount if already signed in)
   useEffect(() => {
@@ -68,6 +68,10 @@ export default function App() {
   const handleSearch = async (q) => {
     const sq = (q || query).trim()
     if (!sq) return
+    if (!user) {
+      setError('Sign in with Google to search for deals.')
+      return
+    }
     setQuery(sq)
     setLoading(true)
     setError(null)
@@ -77,6 +81,9 @@ export default function App() {
       setResult(data)
     } catch (e) {
       setError(e.message)
+      if (e.message.includes('session has expired')) {
+        signOut()
+      }
     } finally {
       setLoading(false)
     }
@@ -165,64 +172,80 @@ export default function App() {
             padding: '18px 18px 20px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
           }}>
-            <div style={{
-              display: 'flex',
-              gap: 8,
-              background: 'rgba(255,255,255,0.95)',
-              borderRadius: 14,
-              padding: 6,
-              boxShadow: 'var(--shadow-md)',
-            }}>
-              <span style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', color: 'var(--text-dim)', fontSize: 17 }}>🔍</span>
-              <input
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: 'var(--text)',
-                  fontSize: 15,
-                  padding: '10px 4px',
-                  fontFamily: 'var(--font)',
-                }}
-                placeholder="best TWS under 2000, best phone under 30k..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              />
-              <button
-                onClick={() => handleSearch()}
-                style={{
-                  background: 'var(--ink)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '10px 22px',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >Search</button>
-            </div>
+            {user ? (
+              <>
+                <div style={{
+                  display: 'flex',
+                  gap: 8,
+                  background: 'rgba(255,255,255,0.95)',
+                  borderRadius: 14,
+                  padding: 6,
+                  boxShadow: 'var(--shadow-md)',
+                }}>
+                  <span style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', color: 'var(--text-dim)', fontSize: 17 }}>🔍</span>
+                  <input
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      color: 'var(--text)',
+                      fontSize: 15,
+                      padding: '10px 4px',
+                      fontFamily: 'var(--font)',
+                    }}
+                    placeholder="best TWS under 2000, best phone under 30k..."
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                  />
+                  <button
+                    onClick={() => handleSearch()}
+                    style={{
+                      background: 'var(--ink)',
+                      color: '#fff',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      border: 'none',
+                      borderRadius: 10,
+                      padding: '10px 22px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >Search</button>
+                </div>
 
-            {/* Suggestions */}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14, justifyContent: 'center' }}>
-              {SUGGESTIONS.map(s => (
-                <button key={s} onClick={() => handleSearch(s)} style={{
-                  background: 'rgba(255,255,255,0.14)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  color: '#fff',
-                  fontSize: 12.5,
-                  fontWeight: 500,
-                  padding: '6px 14px',
-                  borderRadius: 20,
-                  cursor: 'pointer',
-                  backdropFilter: 'blur(6px)',
-                }}>{s}</button>
-              ))}
-            </div>
+                {/* Suggestions */}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14, justifyContent: 'center' }}>
+                  {SUGGESTIONS.map(s => (
+                    <button key={s} onClick={() => handleSearch(s)} style={{
+                      background: 'rgba(255,255,255,0.14)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      color: '#fff',
+                      fontSize: 12.5,
+                      fontWeight: 500,
+                      padding: '6px 14px',
+                      borderRadius: 20,
+                      cursor: 'pointer',
+                      backdropFilter: 'blur(6px)',
+                    }}>{s}</button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '10px 4px' }}>
+                <div style={{ color: '#fff', fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
+                  Sign in to search for deals
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginBottom: 16 }}>
+                  Your searches and favorites are saved to your account
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <GoogleSignInButton />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

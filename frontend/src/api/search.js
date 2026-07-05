@@ -9,6 +9,7 @@ export async function searchProducts(query) {
     body: JSON.stringify({ query }),
   });
   if (res.status === 429) throw new Error('Too many searches — please wait a moment and try again.');
+  if (res.status === 401) throw new Error('Your session has expired — please sign in again to search.');
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json();
 }
