@@ -3,7 +3,7 @@ import { useAuth } from '../auth/AuthContext'
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-export default function GoogleSignInButton({ onError }) {
+export default function GoogleSignInButton() {
   const { signInWithGoogleIdToken } = useAuth()
   const buttonRef = useRef(null)
 
@@ -22,7 +22,6 @@ export default function GoogleSignInButton({ onError }) {
             await signInWithGoogleIdToken(credential)
           } catch (e) {
             console.error('Google sign-in failed:', e)
-            if (onError) onError(e.message || 'Google sign-in failed')
           }
         },
       })
@@ -49,5 +48,7 @@ export default function GoogleSignInButton({ onError }) {
   }, [signInWithGoogleIdToken])
 
   if (!CLIENT_ID) return null
-  return <div ref={buttonRef} />
+  // Fixed dimensions matching Google's rendered 'medium' pill button so the
+  // header doesn't shift when the button pops in after the async script loads.
+  return <div ref={buttonRef} style={{ width: 175, height: 40 }} />
 }
