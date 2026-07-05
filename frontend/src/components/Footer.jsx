@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import homeHero from '../assets/home-hero.png'
+import homeHero from '../assets/home-hero.jpg'
 
 const CHANNELS = [
   { name: 'Mrwhosetheboss', color: '#ef4444' },
