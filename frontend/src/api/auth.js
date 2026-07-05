@@ -8,7 +8,16 @@ export async function loginWithGoogle(idToken) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ idToken }),
   });
-  if (!res.ok) throw new Error(`Google sign-in failed: ${res.status}`);
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const body = await res.json();
+      detail = body?.message ? `: ${body.message}` : '';
+    } catch {
+      // response wasn't JSON — ignore
+    }
+    throw new Error(`Google sign-in failed (${res.status})${detail}`);
+  }
   return res.json(); // { token, user }
 }
 

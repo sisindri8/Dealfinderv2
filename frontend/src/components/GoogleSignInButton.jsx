@@ -3,7 +3,7 @@ import { useAuth } from '../auth/AuthContext'
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-export default function GoogleSignInButton() {
+export default function GoogleSignInButton({ onError }) {
   const { signInWithGoogleIdToken } = useAuth()
   const buttonRef = useRef(null)
 
@@ -22,6 +22,7 @@ export default function GoogleSignInButton() {
             await signInWithGoogleIdToken(credential)
           } catch (e) {
             console.error('Google sign-in failed:', e)
+            if (onError) onError(e.message || 'Google sign-in failed')
           }
         },
       })
