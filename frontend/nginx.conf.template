@@ -1,3 +1,5 @@
+resolver 8.8.8.8 8.8.4.4 valid=10s ipv6=off;
+
 server {
     listen ${PORT};
     server_name localhost;
@@ -5,7 +7,9 @@ server {
     index index.html;
 
     location /api {
-        proxy_pass ${API_GATEWAY_URL};
+        set $upstream ${API_GATEWAY_URL};
+        proxy_pass $upstream;
+        proxy_ssl_server_name on;
         proxy_set_header Host ${API_GATEWAY_HOST};
         proxy_set_header X-Real-IP $remote_addr;
     }
