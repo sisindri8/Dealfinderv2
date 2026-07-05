@@ -126,8 +126,11 @@ function AboutSection() {
       <div style={{
         borderRadius: 'var(--radius)', overflow: 'hidden',
         boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)',
+        aspectRatio: '16 / 9',
       }}>
         <img src={homeHero} alt="DealFinder — redesigning how you discover trusted picks"
+          width={1456} height={819}
+          loading="lazy" decoding="async"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
       </div>
 
